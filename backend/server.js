@@ -16,8 +16,10 @@ const app = express();
 app.use(helmet({ crossOriginResourcePolicy: false }));
 
 const allowedOrigins = [
-  "http://localhost:5173"
-];
+  "http://localhost:5173",
+  "https://gyaanlms.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
