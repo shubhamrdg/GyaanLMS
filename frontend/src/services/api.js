@@ -9,6 +9,13 @@ const api = axios.create({
   baseURL: API_URL,
 })
 
+const protectedRoutePrefixes = ['/admin', '/faculty', '/student', '/checkout']
+
+const isProtectedRoute = (pathname) =>
+  protectedRoutePrefixes.some((route) =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem('gyaanlms_user'))
   if (user?.token) {
@@ -20,12 +27,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Only redirect if it's a 401 and NOT a login attempt
-    if (error.response?.status === 401 && !error.config.url.endsWith('/auth/login')) {
+    if (error.response?.status === 401 && isProtectedRoute(window.location.pathname)) {
       localStorage.removeItem('gyaanlms_user')
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
+      window.location.href = '/login'
     }
     return Promise.reject(error)
   }
