@@ -102,6 +102,7 @@ VITE_API_URL=/api
 
 The Vite development server proxies `/api` and `/uploads` to the backend at `http://localhost:5000`.
 Production builds use `frontend/.env.production` to target the deployed backend. Set `VITE_API_URL` in the hosting provider's environment settings to override it.
+For Vercel, set the project root directory to `frontend`; its `vercel.json` rewrites client-side routes such as `/login` to the React app entry point.
 
 In a second terminal:
 
@@ -138,7 +139,7 @@ Before deploying, configure production environment variables and update the back
 
 ## Links
 
-- Live application: [GyaanLMS on vercel](-)
+- Live application: [GyaanLMS on vercel](https://gyaanlms.vercel.app/)
 - Source repository: [Smitlad-11/GyaanLMS](https://github.com/shubhamrdg/GyaanLMS)
 
 ## Author
