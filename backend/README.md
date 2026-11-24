@@ -103,5 +103,5 @@ The `npm run verify-users` script is available for checking existing user record
 ## Deployment notes
 
 - Set production values for `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, and any required email or Cloudinary variables.
-- Configure the backend CORS allowlist in `server.js` for the deployed frontend origin; the current source configuration allows the local Vite origin.
+- Set `CLIENT_URL` to the deployed frontend origin. The CORS allowlist includes the local Vite origin, the documented Render and Vercel frontend URLs, and `CLIENT_URL`.
 - Never commit environment files, credentials, or production secrets.

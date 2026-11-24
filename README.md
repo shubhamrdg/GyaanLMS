@@ -101,6 +101,7 @@ VITE_API_URL=/api
 ```
 
 The Vite development server proxies `/api` and `/uploads` to the backend at `http://localhost:5000`.
+Production builds use `frontend/.env.production` to target the deployed backend. Set `VITE_API_URL` in the hosting provider's environment settings to override it.
 
 In a second terminal:
 
