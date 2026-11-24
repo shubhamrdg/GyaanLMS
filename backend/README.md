@@ -1,159 +1,107 @@
-# GyaanLMS — E-Learning Management System
-### MCA Internship Project | Brainybeam Info-Tech Pvt Ltd | MERN Stack
+# GyaanLMS Backend
 
----
+The backend is the Express API for GyaanLMS. It handles authentication, role-protected course and lecture operations, enrollment, assignments, progress, feedback, and uploaded media.
 
-## 📌 Project Overview
+For the complete application overview and frontend setup, see the [root README](../README.md).
 
-GyaanLMS is a full-stack E-Learning Management System with **3 modules**:
-- 🔴 **Admin** — Manage users, courses, and view revenue analytics
-- 🟣 **Faculty** — Create courses, upload lectures, grade assignments
-- 🟢 **Student** — Browse/enroll in courses, watch videos, track progress
+## Requirements
 
----
+- Node.js 18 or later
+- MongoDB connection string
 
-## 🛠 Tech Stack
+## Setup
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React.js (Vite) + Tailwind CSS |
-| State | Redux Toolkit |
-| Backend | Node.js + Express.js |
-| Database | MongoDB + Mongoose |
-| Auth | JWT + bcryptjs |
-| Payments | None — enrollments recorded as offline/manual |
-| File Upload | Multer |
-| Certificates | PDFKit |
+From the repository root:
 
----
-
-## 🚀 Quick Setup
-
-### Prerequisites
-- Node.js v18+
-- MongoDB Atlas account (or local MongoDB)
-
-### 1. Clone & Setup Backend
 ```bash
-cd GyaanLMS-backend
+cd backend
 npm install
-cp .env.example .env
-# Edit .env with your MongoDB URI, JWT secret, Cloudinary and SMTP credentials
-npm run seed      # Seed database with demo data
-npm run dev       # Start on http://localhost:5000
 ```
 
-### 2. Setup Frontend
+Create `backend/.env` with:
+
+```env
+PORT=5000
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<a-long-random-secret>
+CLIENT_URL=http://localhost:5173
+```
+
+Do not commit `.env` or put real credentials in documentation.
+
+### Optional service configuration
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `JWT_EXPIRE` | JWT lifetime | `7d` |
+| `CLOUDINARY_URL` | Cloudinary connection URL | None |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account name when not using `CLOUDINARY_URL` | None |
+| `CLOUDINARY_API_KEY` | Cloudinary API key when not using `CLOUDINARY_URL` | None |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret when not using `CLOUDINARY_URL` | None |
+| `EMAIL_HOST` | SMTP server | `smtp.zoho.in` |
+| `EMAIL_PORT` | SMTP port | `465` |
+| `EMAIL_SECURE` | Use secure SMTP | `true` |
+| `EMAIL_USER` | SMTP account | None |
+| `EMAIL_PASS` | SMTP password or app password | None |
+| `EMAIL_FROM_NAME` | Sender display name | `gyaanlms` |
+
+Email delivery requires both `EMAIL_USER` and `EMAIL_PASS`. Cloudinary can be configured with `CLOUDINARY_URL` or with all three separate Cloudinary variables.
+
+## Run
+
+Development server with automatic reload:
+
 ```bash
-cd GyaanLMS-frontend
-npm install
-cp .env.example .env
-npm run dev       # Start on http://localhost:5173
+npm run dev
 ```
 
----
+Production-style server:
 
-## 🔑 Test Credentials (after seeding)
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@GyaanLMS.com | GyaanLMS@Admin18 |
-| Faculty | priyapatel@gmail.com | Priya@123 |
-| Student | rohan@student.com | Rohan@123 |
-
----
-
-## 📂 Project Structure
-
-```
-GyaanLMS-backend/
-├── config/          # DB, Cloudinary & upload config
-├── controllers/     # Business logic
-├── middleware/      # Auth, Role, Error, Upload
-├── models/          # MongoDB schemas
-├── routes/          # API routes
-├── utils/           # JWT, Email, Certificate
-└── server.js        # Entry point
-
-GyaanLMS-frontend/
-├── src/
-│   ├── components/  # Reusable UI components
-│   ├── layouts/     # Admin, Faculty, Student layouts
-│   ├── pages/       # Page components
-│   ├── redux/       # State management
-│   ├── services/    # API & Payment services
-│   └── App.jsx      # Route configuration
+```bash
+npm start
 ```
 
----
+The default API address is `http://localhost:5000`. `GET /` is a health check. The frontend Vite configuration proxies `/api` and `/uploads` to this address during local development.
 
-## 🔗 API Endpoints
+## API route groups
 
-### Authentication
-| Method | Endpoint | Access |
-|--------|----------|--------|
-| POST | /api/auth/register | Public |
-| POST | /api/auth/login | Public |
-| GET | /api/auth/me | Private |
-| PUT | /api/auth/update | Private |
+All API routes are under `/api`:
 
-### Courses
-| Method | Endpoint | Access |
-|--------|----------|--------|
-| GET | /api/courses | Public |
-| POST | /api/courses | Faculty/Admin |
-| PUT | /api/courses/:id | Faculty/Admin |
-| DELETE | /api/courses/:id | Admin |
-| PUT | /api/courses/:id/publish | Faculty/Admin |
+| Route prefix | Purpose |
+|---|---|
+| `/auth` | Registration, login, account, and email flows |
+| `/courses` | Course browsing and management |
+| `/lectures` | Course lectures and media |
+| `/orders` | Enrollment/order operations |
+| `/users` | User administration |
+| `/assignments` | Assignment creation and submission |
+| `/progress` | Student lesson and course progress |
+| `/feedback` | Course feedback |
+| `/platform-feedback` | Platform feedback |
+| `/contacts` | Contact inquiries |
+| `/queries` | Course questions and faculty responses |
+| `/sessions` | Live learning sessions |
 
-### Users (Admin)
-| Method | Endpoint | Access |
-|--------|----------|--------|
-| GET | /api/users | Admin |
-| PUT | /api/users/:id/block | Admin |
-| DELETE | /api/users/:id | Admin |
-| GET | /api/users/stats | Admin |
+Route-level authentication and role checks are applied by the route handlers.
 
-### Payments
-| Method | Endpoint | Access |
-|--------|----------|--------|
-| POST | /api/orders/create | Student |
-| POST | /api/payments/verify | Student |
+## Progress and certificates
 
----
+The API records lesson completion and course completion in the student's progress record. It does not generate or store certificate files. Once the course is complete, the frontend creates a certificate PDF when the student selects **View Certificate** and opens it in a new tab.
 
-## 🌟 Features
+## Database seeding
 
-- ✅ JWT Authentication with role-based access control
-- ✅ Admin dashboard with charts and revenue analytics  
-- ✅ Faculty course & lecture management
-- ✅ Video player with progress tracking
-- ✅ Instant course enrollment with offer/discount pricing
-- ✅ PDF certificate generation on course completion
-- ✅ Assignment submission and grading
-- ✅ Dark mode toggle
-- ✅ Responsive design (mobile + desktop)
-- ✅ Course ratings & reviews
+To insert the local demo users and courses:
 
----
+```bash
+npm run seed
+```
 
-## ☁️ Deployment
+**Warning:** the seed script deletes all existing user and course records in the database selected by `MONGO_URI` before inserting demo data. Use it only with a disposable development database.
 
-**Backend → Render.com**
-1. Push to GitHub
-2. New Web Service → Connect repo
-3. Build: `npm install` | Start: `node server.js`
-4. Add env variables
+The `npm run verify-users` script is available for checking existing user records.
 
-**Frontend → Vercel**
-1. Import GitHub repo
-2. Framework: Vite
-3. Add `VITE_API_URL=https://your-backend.onrender.com/api`
+## Deployment notes
 
-**Database → MongoDB Atlas**
-1. Create free M0 cluster
-2. Add connection string to `MONGO_URI`
-
----
-
-*Built with ❤️ | GyaanLMS E-Learning Platform | Brainybeam Info-Tech Pvt Ltd*
+- Set production values for `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, and any required email or Cloudinary variables.
+- Configure the backend CORS allowlist in `server.js` for the deployed frontend origin; the current source configuration allows the local Vite origin.
+- Never commit environment files, credentials, or production secrets.
