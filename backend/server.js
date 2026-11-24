@@ -1,0 +1,77 @@
+// server.js - Main entry point for GyaanLMS backend
+require('express-async-errors');
+require("dotenv").config();
+const cloudinary = require("./config/cloudinary");
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const path = require('path');
+const connectDB = require('./config/db');
+
+
+const app = express();
+
+// Security middleware
+app.use(helmet({ crossOriginResourcePolicy: false }));
+
+const allowedOrigins = [
+  "http://localhost:5173"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+app.options("*", cors());
+
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/courses', require('./routes/courseRoutes'));
+app.use('/api/lectures', require('./routes/lectureRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/assignments', require('./routes/assignmentRoutes'));
+app.use('/api/progress', require('./routes/progressRoutes'));
+app.use('/api/feedback', require('./routes/feedbackRoutes'));
+app.use('/api/platform-feedback', require('./routes/platformFeedbackRoutes'));
+app.use('/api/contacts', require('./routes/contactRoutes'));
+app.use('/api/queries', require('./routes/queryRoutes'));
+app.use('/api/sessions', require('./routes/sessionRoutes'));
+
+// Health check
+app.get('/', (req, res) => res.json({ message: 'GyaanLMS API is running' }));
+
+// Error handler middleware (must be last)
+app.use(require('./middleware/errorMiddleware'))
+
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+    try {
+        await connectDB();
+        console.log("Cloudinary:", cloudinary.config().cloud_name);
+        app.listen(PORT, () => console.log(`GyaanLMS server running on port ${PORT}`));
+    } catch (error) {
+        console.error('Server failed to start:', error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
