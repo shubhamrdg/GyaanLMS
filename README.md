@@ -137,10 +137,10 @@ Before deploying, configure production environment variables and update the back
 
 ## Links
 
-- Live application: [GyaanLMS on Render](https://GyaanLMS-frontend.onrender.com)
-- Source repository: [Smitlad-11/GyaanLMS](https://github.com/Smitlad-11/GyaanLMS)
+- Live application: [GyaanLMS on vercel](-)
+- Source repository: [Smitlad-11/GyaanLMS](https://github.com/shubhamrdg/GyaanLMS)
 
 ## Author
 
-**Smitkumar Lad**  
-MCA Student | MERN Stack Developer
+**Shubham Gupta**  
+BTech Student | MERN Stack Developer
