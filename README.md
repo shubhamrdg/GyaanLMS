@@ -140,7 +140,7 @@ Before deploying, configure production environment variables and update the back
 ## Links
 
 - Live application: [GyaanLMS on vercel](https://gyaanlms.vercel.app/)
-- Source repository: [Smitlad-11/GyaanLMS](https://github.com/shubhamrdg/GyaanLMS)
+- Source repository: [shubhamrdg/GyaanLMS](https://github.com/shubhamrdg/GyaanLMS)
 
 ## Author
 
